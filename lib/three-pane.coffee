@@ -37,7 +37,6 @@ module.exports = MvcSplit =
   observerOnDidDestroyLeftPaneItemEvent: null
 
   activate: ->
-    atom.config.set('core.destroyEmptyPanes', false)
     rootDir = null
     if atom.project.rootDirectories[0] && atom.project.rootDirectories[0].path
       rootDir = atom.project.rootDirectories[0].path
@@ -47,6 +46,8 @@ module.exports = MvcSplit =
     if !@projectType
       console.error 'Not in an Alloy or NativeScript project'
       return
+
+    atom.config.set('core.destroyEmptyPanes', false)
 
     @workspace = atom.workspace
 
