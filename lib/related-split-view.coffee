@@ -26,8 +26,6 @@ getURIs = (uri, projectType) ->
     if !uris.jsUri && !uris.styleUri && !uris.viewUri
         uris = false
 
-    console.log uris
-
     return uris
 
 module.exports = MvcSplit =
@@ -78,11 +76,9 @@ module.exports = MvcSplit =
             uri = uri || ''
 
             if uri.indexOf('atom:') != -1 || uri == ''
-                atom.workspace.openURIInPane(uri, @paneLeft, options)
+                return atom.workspace.openURIInPane(uri, @paneLeft, options)
             else
-                this.openRelated(uri, options={})
-
-        console.log 'hey now'
+                return this.openRelated(uri, options={})
 
         @observeActiveLeftPaneItemEvent = @paneLeft.onDidChangeActiveItem (items) => @onActivateLeftPane(items)
         @observerOnDidMoveLeftPaneItemEvent = @paneLeft.onDidMoveItem (e) => @onDidMoveLeftPaneItem(e)
@@ -145,14 +141,17 @@ module.exports = MvcSplit =
         uris = getURIs(uri, @projectType);
 
         if !uris
-            atom.workspace.openURIInPane(uri, @paneLeft, options)
-            return
+            return atom.workspace.openURIInPane(uri, @paneLeft, options)
+
+        returnFunction = null;
 
         if fs.existsSync(uris.styleUri)
-            @workspace.openURIInPane(uris.styleUri, @paneRightTop)
+            returnFunction = atom.workspace.openURIInPane(uris.styleUri, @paneRightTop)
 
         if fs.existsSync(uris.viewUri)
-            @workspace.openURIInPane(uris.viewUri, @paneRightBottom)
+            returnFunction = atom.workspace.openURIInPane(uris.viewUri, @paneRightBottom)
 
         if fs.existsSync(uris.jsUri)
-            @workspace.openURIInPane(uris.jsUri, @paneLeft)
+            returnFunction = atom.workspace.openURIInPane(uris.jsUri, @paneLeft)
+
+        returnFunction

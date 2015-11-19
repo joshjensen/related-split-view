@@ -1,11 +1,15 @@
 {
-  "name": "three-pane",
-  "main": "./lib/three-pane",
-  "version": "0.0.0",
-  "description": "A short description of your package",
+  "name": "related-split-view",
+  "main": "./lib/related-split-view",
+  "version": "0.1.0",
+  "description": "An Atom package for easily managing NativeScript and Titanium Alloy's related file panes.",
   "keywords": [
+      "alloy",
+      "titanium",
+      "nativescript",
+      "mvc"
   ],
-  "repository": "https://github.com/joshjensen/three-pane",
+  "repository": "https://github.com/joshjensen/related-split-view",
   "license": "MIT",
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
