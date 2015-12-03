@@ -23,6 +23,27 @@ getURIs = (uri, projectType) ->
             uris.styleUri = uri.replace('/views/', '/styles/').replace('.xml', '.tss')
             uris.viewUri = uri
 
+    if projectType == 'nativescript'
+        if uri.indexOf('.js') != -1
+            uris.jsUri = uri
+            uris.styleUri = uri.replace('.js', '.css')
+            uris.viewUri = uri.replace('.js', '.xml')
+
+        if uri.indexOf('.ts') != -1
+            uris.jsUri = uri
+            uris.styleUri = uri.replace('.ts', '.css')
+            uris.viewUri = uri.replace('.ts', '.xml')            
+
+        if uri.indexOf('.css') != -1
+            uris.jsUri = uri.replace('.css', '.js')
+            uris.styleUri = uri
+            uris.viewUri = uri.replace('.css', '.xml')
+
+        if uri.indexOf('.xml') != -1
+            uris.jsUri = uri.replace('.xml', '.js')
+            uris.styleUri = uri.replace('.xml', '.tss')
+            uris.viewUri = uri
+
     if !uris.jsUri && !uris.styleUri && !uris.viewUri
         uris = false
 
@@ -46,6 +67,9 @@ module.exports = MvcSplit =
 
         if fs.existsSync(rootDir + '/alloy.js') || fs.existsSync(rootDir + '/app/alloy.js')
             @projectType = 'alloy'
+
+        if fs.existsSync(rootDir + '/App_Resources/') || fs.existsSync(rootDir + '/app.js')
+            @projectType = 'nativescript'
 
         if !@projectType
             console.error 'Not in an Alloy or NativeScript project'
