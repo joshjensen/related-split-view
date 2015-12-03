@@ -32,7 +32,7 @@ getURIs = (uri, projectType) ->
         if uri.indexOf('.ts') != -1
             uris.jsUri = uri
             uris.styleUri = uri.replace('.ts', '.css')
-            uris.viewUri = uri.replace('.ts', '.xml')            
+            uris.viewUri = uri.replace('.ts', '.xml')
 
         if uri.indexOf('.css') != -1
             uris.jsUri = uri.replace('.css', '.js')
@@ -68,7 +68,7 @@ module.exports = MvcSplit =
         if fs.existsSync(rootDir + '/alloy.js') || fs.existsSync(rootDir + '/app/alloy.js')
             @projectType = 'alloy'
 
-        if fs.existsSync(rootDir + '/App_Resources/') || fs.existsSync(rootDir + '/app.js')
+        if (fs.existsSync(rootDir + '/App_Resources/') && fs.existsSync(rootDir + '/app.js')) || (fs.existsSync(rootDir + '/app/App_Resources/') && fs.existsSync(rootDir + '/app/app.js'))
             @projectType = 'nativescript'
 
         if !@projectType
