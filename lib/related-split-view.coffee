@@ -75,11 +75,11 @@ module.exports = MvcSplit =
             console.error 'Not in an Alloy or NativeScript project'
             return
 
-        atom.config.set('core.destroyEmptyPanes', false)
-
         @workspace = atom.workspace
 
         @panes = @workspace.getPanes()
+
+        atom.config.set('core.destroyEmptyPanes', false)
 
         if @panes.length == 0
             @workspace.open()
@@ -95,6 +95,15 @@ module.exports = MvcSplit =
         @paneLeft = @panes[0]
         @paneRightTop = @panes[1]
         @paneRightBottom = @panes[2]
+
+        @paneLeft.destroy = () =>
+            return
+
+        @paneRightTop.destroy = () =>
+            return
+
+        @paneRightBottom.destroy = () =>
+            return
 
         atom.workspace.open = (uri, options={}) =>
             uri = uri || ''
