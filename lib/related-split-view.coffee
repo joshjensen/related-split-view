@@ -1,6 +1,8 @@
 {CompositeDisposable, Disposable} = require 'atom'
 fs = require 'fs'
 
+process.setMaxListeners(0);
+
 getURIs = (uri, projectType) ->
     uris = {}
 
@@ -41,7 +43,29 @@ getURIs = (uri, projectType) ->
 
         if uri.indexOf('.xml') != -1
             uris.jsUri = uri.replace('.xml', '.js')
-            uris.styleUri = uri.replace('.xml', '.tss')
+            uris.styleUri = uri.replace('.xml', '.css')
+            uris.viewUri = uri
+
+    if projectType == 'other' || projectType == 'ionic'
+        if uri.indexOf('.js') != -1
+            uris.jsUri = uri
+            uris.styleUri = uri.replace('.js', '.css')
+            uris.viewUri = uri.replace('.js', '.html')
+
+        if uri.indexOf('.css') != -1 || uri.indexOf('.scss') != -1
+            if uri.indexOf('.css') != -1
+                uris.jsUri = uri.replace('.css', '.js')
+                uris.styleUri = uri
+                uris.viewUri = uri.replace('.css', '.html')
+
+            if uri.indexOf('.scss') != -1
+                uris.jsUri = uri.replace('.scss', '.js')
+                uris.styleUri = uri
+                uris.viewUri = uri.replace('.scss', '.html')
+
+        if uri.indexOf('.html') != -1
+            uris.jsUri = uri.replace('.html', '.js')
+            uris.styleUri = uri.replace('.html', '.css')
             uris.viewUri = uri
 
     if !uris.jsUri && !uris.styleUri && !uris.viewUri
@@ -71,9 +95,17 @@ module.exports = MvcSplit =
         if (fs.existsSync(rootDir + '/App_Resources/') && fs.existsSync(rootDir + '/app.js')) || (fs.existsSync(rootDir + '/app/App_Resources/') && fs.existsSync(rootDir + '/app/app.js'))
             @projectType = 'nativescript'
 
+        if (fs.existsSync(rootDir + '/../ionic.config.json') || fs.existsSync(rootDir + '/ionic.config.json'))
+            @projectType = 'ionic'
+
+        if (fs.existsSync(rootDir + '/.enable-rsv'))
+            @projectType = 'other'
+
         if !@projectType
-            console.error 'Not in an Alloy or NativeScript project'
+            console.error 'Not in a valid project'
             return
+
+        console.log @projectType
 
         @workspace = atom.workspace
 
@@ -118,26 +150,35 @@ module.exports = MvcSplit =
         @observerOnWillRemoveItemLeftPaneItemEvent = @paneLeft.onWillRemoveItem (e) => @onWillRemoveItemLeftPaneItem(e)
 
     deactivate: ->
+        console.log '::Destroy::'
+
         atom.config.set('core.destroyEmptyPanes', true)
-        @observeActiveLeftPaneItemEvent.dispose()
-        @observeActiveRightTopPaneItemEvent.dispose()
-        @observerOnWillRemoveItemLeftPaneItemEvent.dispose()
 
-        atom.workspace.open = (uri, options={}) ->
-            searchAllPanes = options.searchAllPanes
-            split = options.split
-            uri = atom.project.resolvePath(uri)
+        # @paneLeft.__proto__.destroy()
+        # @paneRightTop.__proto__.destroy()
+        # @paneRightBottom.__proto__.destroy()
 
-            pane = atom.workspace.paneContainer.paneForURI(uri) if searchAllPanes
-            pane ?= switch split
-                when 'left'
-                    atom.workspace.getActivePane().findLeftmostSibling()
-                when 'right'
-                    atom.workspace.getActivePane().findOrCreateRightmostSibling()
-                else
-                    atom.workspace.getActivePane()
+        # @observeActiveLeftPaneItemEvent.dispose()
+        # @observeActiveRightTopPaneItemEvent.dispose()
+        # @observerOnWillRemoveItemLeftPaneItemEvent.dispose()
 
-            atom.workspace.openURIInPane(uri, pane, options)
+        atom.workspace.open = atom.workspace.__proto__.open
+
+        # atom.workspace.open = (uri, options={}) ->
+        #     searchAllPanes = options.searchAllPanes
+        #     split = options.split
+        #     uri = atom.project.resolvePath(uri)
+        #
+        #     pane = atom.workspace.paneContainer.paneForURI(uri) if searchAllPanes
+        #     pane ?= switch split
+        #         when 'left'
+        #             atom.workspace.getActivePane().findLeftmostSibling()
+        #         when 'right'
+        #             atom.workspace.getActivePane().findOrCreateRightmostSibling()
+        #         else
+        #             atom.workspace.getActivePane()
+        #
+        #     atom.workspace.openURIInPane(uri, pane, options)
 
     onWillRemoveItemLeftPaneItem: (e) ->
         uris = getURIs(e.item.getURI(), @projectType);
