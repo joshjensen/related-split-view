@@ -1,7 +1,7 @@
 {
   "name": "related-split-view",
   "main": "./lib/related-split-view",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "An Atom package for easily managing NativeScript and Titanium Alloy's related file panes.",
   "keywords": [
     "alloy",
